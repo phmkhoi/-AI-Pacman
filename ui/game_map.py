@@ -1,4 +1,5 @@
-from ui.game_setting import pygame, WINDOW_HEIGHT, WINDOW_WIDTH, g_SCREEN
+import ui.game_setting
+from ui.game_setting import pygame, WINDOW_HEIGHT, WINDOW_WIDTH
 import math
 
 # use map.py to define elements
@@ -7,6 +8,9 @@ WALL_COLOR = "blue"
 DOT_COLOR = "white"
 GATE_COLOR = "white"
 PI = math.pi
+
+COLUMN_AMOUNT = 30
+ROW_AMOUNT = 32
 
 # 32x30 array
 BOARDS = [
@@ -46,54 +50,54 @@ BOARDS = [
 ]
 
 def printMap():
-    TILE_HEIGHT = ((WINDOW_HEIGHT - 50) // 32)
-    TILE_WIDTH = (WINDOW_WIDTH // 30)
+    TILE_HEIGHT = (WINDOW_HEIGHT // ROW_AMOUNT)
+    TILE_WIDTH = (WINDOW_WIDTH // COLUMN_AMOUNT)
 
     for i in range(len(BOARDS)):
         for j in range(len(BOARDS[i])):
             if BOARDS[i][j] == 1:
-                pygame.draw.circle(g_SCREEN, DOT_COLOR, 
+                pygame.draw.circle(ui.game_setting.g_SCREEN, DOT_COLOR, 
                     (j * TILE_WIDTH + (0.5 * TILE_WIDTH), i * TILE_HEIGHT + (0.5 * TILE_HEIGHT)), 4)
             
             elif BOARDS[i][j] == 2:
-                pygame.draw.circle(g_SCREEN, DOT_COLOR, 
+                pygame.draw.circle(ui.game_setting.g_SCREEN, DOT_COLOR, 
                     (j * TILE_WIDTH + (0.5 * TILE_WIDTH), i * TILE_HEIGHT + (0.5 * TILE_HEIGHT)), 10)
             
             elif BOARDS[i][j] == 3:
-                pygame.draw.line(g_SCREEN, WALL_COLOR, 
+                pygame.draw.line(ui.game_setting.g_SCREEN, WALL_COLOR, 
                     (j * TILE_WIDTH + (0.5 * TILE_HEIGHT), i * TILE_HEIGHT), 
                     (j * TILE_WIDTH + (0.5 * TILE_HEIGHT), i * TILE_HEIGHT + TILE_HEIGHT))
                 
             elif BOARDS[i][j] == 4:
-                pygame.draw.line(g_SCREEN, WALL_COLOR,
+                pygame.draw.line(ui.game_setting.g_SCREEN, WALL_COLOR,
                     (j * TILE_WIDTH, i * TILE_HEIGHT + (0.5 * TILE_HEIGHT)),
                     (j * TILE_WIDTH + TILE_WIDTH, i * TILE_HEIGHT + (0.5 * TILE_HEIGHT)))
                 
             elif BOARDS[i][j] == 5:
-                pygame.draw.arc(g_SCREEN, WALL_COLOR,
+                pygame.draw.arc(ui.game_setting.g_SCREEN, WALL_COLOR,
                     [(j * TILE_WIDTH + TILE_WIDTH * 0.5), (i * TILE_HEIGHT + TILE_HEIGHT * 0.5),
                     TILE_WIDTH, TILE_HEIGHT], PI/2, PI, 1)
                 
             elif BOARDS[i][j] == 6:
-                pygame.draw.arc(g_SCREEN, WALL_COLOR,
+                pygame.draw.arc(ui.game_setting.g_SCREEN, WALL_COLOR,
                     [(j * TILE_WIDTH + TILE_WIDTH * 0.5), (i * TILE_HEIGHT - TILE_HEIGHT * 0.5),
                     TILE_WIDTH, TILE_HEIGHT], PI, 3 * PI/2, 1)
                 
             elif BOARDS[i][j] == 7:
-                pygame.draw.arc(g_SCREEN, WALL_COLOR,
+                pygame.draw.arc(ui.game_setting.g_SCREEN, WALL_COLOR,
                     [(j * TILE_WIDTH - TILE_WIDTH * 0.5), (i * TILE_HEIGHT - TILE_HEIGHT * 0.5),
                     TILE_WIDTH, TILE_HEIGHT], 3 * PI/2, 2 * PI, 1)
                 
             elif BOARDS[i][j] == 8:
-                pygame.draw.arc(g_SCREEN, WALL_COLOR,
+                pygame.draw.arc(ui.game_setting.g_SCREEN, WALL_COLOR,
                     [(j * TILE_WIDTH - TILE_WIDTH * 0.5), (i * TILE_HEIGHT + TILE_HEIGHT * 0.5),
                     TILE_WIDTH, TILE_HEIGHT], 0, PI/2, 1)
                 
             elif BOARDS[i][j] == 9:
-                pygame.draw.line(g_SCREEN, GATE_COLOR,
+                pygame.draw.line(ui.game_setting.g_SCREEN, GATE_COLOR,
                     (j * TILE_WIDTH, i * TILE_HEIGHT + (0.5 * TILE_HEIGHT)),
                     (j * TILE_WIDTH + TILE_WIDTH, i * TILE_HEIGHT + (0.5 * TILE_HEIGHT)))
                 
 def initUI():
-    g_SCREEN.fill("black")
+    ui.game_setting.g_SCREEN.fill("black")
     printMap()
