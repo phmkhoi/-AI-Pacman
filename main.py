@@ -27,6 +27,8 @@ ANIMATION_FRAME_DURATION = 50
 run = True
 pacman_direction = 0
 pacman_direction_command = 0
+pacman_previous_direction = 0
+pacman_direction_changed = False
 pacman_turn_allowed = [False, False, False, False]
 animation_counter = 0
 pacman_score = 0
@@ -73,9 +75,15 @@ while run:
     
     #Check Collision
     pacman_turn_allowed = pacman.checkPosition(pacman_direction)
+    #Check if direction is changed
+    if pacman_previous_direction != pacman_direction and pacman_turn_allowed[pacman_direction] == True:
+        pacman_previous_direction = pacman_direction
+        pacman_direction_changed = True
+    else:
+        pacman_direction_changed = False
     #Characters Movement
     if (move_counter == 0):
-        pacman.move(pacman_direction, pacman_turn_allowed)
+        pacman.move(pacman_direction, pacman_turn_allowed, pacman_direction_changed)
     move_counter = (move_counter + 1) % 5
 
     #Collect Score

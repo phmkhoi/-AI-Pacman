@@ -56,24 +56,24 @@ class Pacman():
                     Turns[2] = 0
 
             if direction == 2 or direction == 3:
-                if PACMAN_RADIUS - 3 <= x % TILE_SIDE <= PACMAN_RADIUS + 3:
+                if PACMAN_RADIUS - 7 <= x % TILE_SIDE <= PACMAN_RADIUS + 7:
                     if BOARD[(y + PACMAN_RADIUS) // TILE_SIDE][x // TILE_SIDE] < 3:
                         Turns[3] = True
                     if BOARD[(y - PACMAN_RADIUS) // TILE_SIDE][x // TILE_SIDE] < 3:
                         Turns[2] = True
-                if PACMAN_RADIUS - 3 <= y % TILE_SIDE <= PACMAN_RADIUS + 3:
+                if PACMAN_RADIUS - 7 <= y % TILE_SIDE <= PACMAN_RADIUS + 7:
                     if BOARD[y // TILE_SIDE][(x - TILE_SIDE) // TILE_SIDE] < 3:
                         Turns[1] = True
                     if BOARD[y // TILE_SIDE][(x + TILE_SIDE) // TILE_SIDE] < 3:
                         Turns[0] = True
             
             if direction == 0 or direction == 1:
-                if PACMAN_RADIUS - 3 <= x % TILE_SIDE <= PACMAN_RADIUS + 3:
+                if PACMAN_RADIUS - 7 <= x % TILE_SIDE <= PACMAN_RADIUS + 7:
                     if BOARD[(y + TILE_SIDE) // TILE_SIDE][x // TILE_SIDE] < 3:
                         Turns[3] = True
                     if BOARD[(y - TILE_SIDE) // TILE_SIDE][x // TILE_SIDE] < 3:
                         Turns[2] = True
-                if PACMAN_RADIUS - 3 <= y % TILE_SIDE <= PACMAN_RADIUS + 3:
+                if PACMAN_RADIUS - 7 <= y % TILE_SIDE <= PACMAN_RADIUS + 7:
                     if BOARD[y // TILE_SIDE][(x - PACMAN_RADIUS) // TILE_SIDE] < 3:
                         Turns[1] = True
                     if BOARD[y // TILE_SIDE][(x + PACMAN_RADIUS) // TILE_SIDE] < 3:
@@ -93,7 +93,7 @@ class Pacman():
         
         return score
 
-    def move(self, direction, turn_allowed):
+    def move(self, direction, turn_allowed, direction_changed):
         if direction == 0 and turn_allowed[0] == True:
             self.x += PACMAN_SPEED
         if direction == 1 and turn_allowed[1] == True:
@@ -107,3 +107,7 @@ class Pacman():
             self.x = 0  
         elif self.x <= 0:
             self.x = WINDOW_WIDTH - 1
+
+        if direction_changed == True:
+            self.x = ((self.x - OFFSET_WIDTH) // TILE_SIDE) * TILE_SIDE + OFFSET_WIDTH + TILE_SIDE // 2
+            self.y = ((self.y - OFFSET_HEIGHT) // TILE_SIDE) * TILE_SIDE + OFFSET_HEIGHT + TILE_SIDE // 2
