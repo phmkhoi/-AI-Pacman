@@ -1,36 +1,127 @@
-# from game_setting import pygame, WINDOW_HEIGHT, WINDOW_WIDTH, ANIMATION_FRAME_DURATION
-# import game_setting
-# from ui.game_map import COLUMN_AMOUNT, ROW_AMOUNT
+import pygame
+from game_map import TILE_SIDE, OFFSET_HEIGHT, OFFSET_WIDTH, IMAGE_OFFSET
 
-# # Reading animation of Pacman
-# pacmanImages = []
+FRAME_DURATION = 30
+RADIUS = TILE_SIDE // 2 - 1
+# SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
+
+# pacman_images = []
 # for i in range(1, 5):
-#     pacmanImages.append(pygame.transform.scale(pygame.image.load(f'assets/pacman/pacman{i}.png'), (40, 40)))
+#     pacman_images.append(pygame.transform.scale(pygame.image.load(f'assets/pacman/pacman{i}.png'), (26, 26)))
 
-# #Initialize pacman's position
-# INIT_PACMAN_X = (WINDOW_WIDTH // COLUMN_AMOUNT) * (COLUMN_AMOUNT // 2 - 1)
-# INIT_PACMAN_Y = (WINDOW_HEIGHT // ROW_AMOUNT) * (ROW_AMOUNT - 9) + 12
 
-# class Pacman():
-#     def __init__(self):
-#         self.x = INIT_PACMAN_X
-#         self.y = INIT_PACMAN_Y
+class Pacman():
+    def __init__(self, x_2DCoord, y_2DCoord, speed, img_list, direction, board):
+        self.logic_x = x_2DCoord
+        self.logic_y = y_2DCoord
+        
+        self.display_x, self.display_y = self.turnLogicToDisplay()
+        self.speed = speed
+        self.img_list = img_list
+        self.direction = direction
+        self.board = board
 
-#     def Draw(self, direction, counter):
-#         # Define Direction:
-#         # 0: Right, 1: Left, 2: Up, 3: Down
-#         if direction == 0:
-#             game_setting.SCREEN.blit(pacmanImages[counter // ANIMATION_FRAME_DURATION], (self.x, self.y))
+        self.update_counter = 0
+        self.frame_counter = 0
+        self.score = 0
 
-#         if direction == 1:
-#             game_setting.SCREEN.blit(pygame.transform.flip(pacmanImages[counter // ANIMATION_FRAME_DURATION], True, False), (self.x, self.y))
+    def getPosition(self):
+        return self.logic_y, self.logic_x
 
-#         if direction == 2:
-#             game_setting.SCREEN.blit(pygame.transform.rotate(pacmanImages[counter // ANIMATION_FRAME_DURATION], 90), (self.x, self.y))
+    def turnLogicToDisplay(self):
+        display_x = OFFSET_WIDTH + self.logic_x * TILE_SIDE
+        display_y = OFFSET_HEIGHT + self.logic_y * TILE_SIDE
 
-#         if direction == 3:
-#             game_setting.SCREEN.blit(pygame.transform.rotate(pacmanImages[counter // ANIMATION_FRAME_DURATION], 270), (self.x, self.y))
+        return display_x, display_y
 
-    
-#     def GetPosition(self):
-#         return self.x // (WINDOW_WIDTH // COLUMN_AMOUNT), self.y // (WINDOW_HEIGHT // ROW_AMOUNT)
+    def turnDisplayToLogic(self):
+        logic_x = (self.display_x - OFFSET_WIDTH) // TILE_SIDE
+        logic_y = (self.display_y - OFFSET_HEIGHT) // TILE_SIDE
+
+        return logic_x, logic_y
+
+    def render(self, screen):
+
+        self.update_counter += 1
+        if (self.update_counter % 3 == 0):
+            if self.frame_counter <= (FRAME_DURATION * (len(self.img_list) - 1) - 1):
+                self.frame_counter += 1
+            else:
+                self.frame_counter = 0
+
+        if self.direction == "RIGHT":
+            screen.blit(self.img_list[self.frame_counter // FRAME_DURATION], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        elif self.direction == "LEFT":
+            screen.blit(pygame.transform.flip(self.img_list[self.frame_counter // FRAME_DURATION], True, False), (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        elif self.direction == "UP":
+            screen.blit(pygame.transform.rotate(self.img_list[self.frame_counter // FRAME_DURATION], 90), (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        elif self.direction == "DOWN":
+            screen.blit(pygame.transform.rotate(self.img_list[self.frame_counter // FRAME_DURATION], 270), (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+
+    def getTurnsAllowed(self, direction_cmd):
+        turns_allowed_list = {"RIGHT": False, "LEFT": False, "UP": False, "DOWN": False}
+        exact_display_x, exact_display_y = self.turnLogicToDisplay()
+        
+        if direction_cmd == "RIGHT" or direction_cmd == "LEFT":
+            if (self.board[self.logic_y][self.logic_x - 1] < 3):
+                turns_allowed_list["LEFT"] = True
+            
+            if (self.board[self.logic_y][self.logic_x + 1] < 3):
+                turns_allowed_list["RIGHT"] = True
+
+            if (exact_display_x == self.display_x and exact_display_y == self.display_y):
+                if (self.board[self.logic_y - 1][self.logic_x] < 3):
+                    turns_allowed_list["UP"] = True
+
+                if (self.board[self.logic_y + 1][self.logic_x] < 3):
+                    turns_allowed_list["DOWN"] = True
+
+        elif direction_cmd == "UP" or direction_cmd == "DOWN":
+            if (self.board[self.logic_y - 1][self.logic_x] < 3):
+                turns_allowed_list["UP"] = True
+            if (self.board[self.logic_y + 1][self.logic_x] < 3):
+                turns_allowed_list["DOWN"] = True
+
+            if (exact_display_x == self.display_x and exact_display_y == self.display_y):
+                if (self.board[self.logic_y][self.logic_x - 1] < 3):
+                    turns_allowed_list["LEFT"] = True
+
+                if (self.board[self.logic_y][self.logic_x + 1] < 3):
+                    turns_allowed_list["RIGHT"] = True
+
+        return turns_allowed_list
+
+    def checkCollision(self):
+        if self.direction == "LEFT":
+            if self.board[self.logic_y][self.logic_x - 1] > 2 and self.display_x == self.logic_x * TILE_SIDE + OFFSET_WIDTH:
+                return True
+        elif self.direction == "RIGHT":
+            if self.board[self.logic_y][self.logic_x + 1] > 2 and self.display_x == self.logic_x * TILE_SIDE + OFFSET_WIDTH:
+                return True
+        elif self.direction == "UP":
+            if self.board[self.logic_y - 1][self.logic_x] > 2 and self.display_y == self.logic_y * TILE_SIDE + OFFSET_HEIGHT:
+                return True
+        elif self.direction == "DOWN":
+            if self.board[self.logic_y + 1][self.logic_x] > 2 and self.display_y == self.logic_y * TILE_SIDE + OFFSET_HEIGHT:
+                return True
+
+        return False
+
+    def update(self, direction_cmd, turns_allowed_list):
+        self.update_counter += 1
+        if self.update_counter % 5 == 0:
+
+            if turns_allowed_list[direction_cmd] == True and ((self.display_x, self.display_y) == (self.logic_x * TILE_SIDE + OFFSET_WIDTH, self.logic_y * TILE_SIDE + OFFSET_HEIGHT)):
+                self.direction = direction_cmd
+
+            if not self.checkCollision():
+                if self.direction == "RIGHT":
+                    self.display_x += self.speed
+                if self.direction == "LEFT":
+                    self.display_x -= self.speed
+                if self.direction == "UP":
+                    self.display_y -= self.speed
+                if self.direction == "DOWN":
+                    self.display_y += self.speed
+        
+        self.logic_x, self.logic_y = self.turnDisplayToLogic()

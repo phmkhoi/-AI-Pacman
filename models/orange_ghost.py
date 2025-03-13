@@ -1,12 +1,12 @@
 from models.ghosts import Ghost, IMAGE_OFFSET, IMAGE_SCALE
-from algorithms import AStarSearch, reconstructPath
+from algorithms import UCSSearch, reconstructPath
 
-class RedGhost(Ghost):
+class OrangeGhost(Ghost):
     def __init__(self, x_2DCoord, y_2DCoord, target, speed, img, direction, board, in_cage):
         super().__init__(x_2DCoord, y_2DCoord, target, speed, img, direction, board, in_cage)
 
     def getDirection(self):
-        tracer = AStarSearch(self.board, (self.logic_y, self.logic_x), self.target)
+        tracer = UCSSearch(self.board, (self.logic_y, self.logic_x), self.target)
         path = reconstructPath(tracer, (self.logic_y, self.logic_x), self.target)
 
         next_tile = path[0]

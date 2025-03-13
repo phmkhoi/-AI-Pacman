@@ -1,7 +1,7 @@
 from models.ghosts import Ghost, IMAGE_OFFSET, IMAGE_SCALE
 from algorithms import AStarSearch, reconstructPath
 
-class RedGhost(Ghost):
+class PinkGhost(Ghost):
     def __init__(self, x_2DCoord, y_2DCoord, target, speed, img, direction, board, in_cage):
         super().__init__(x_2DCoord, y_2DCoord, target, speed, img, direction, board, in_cage)
 
