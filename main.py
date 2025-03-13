@@ -29,6 +29,7 @@ pacman_direction = 0
 pacman_direction_command = 0
 pacman_turn_allowed = [False, False, False, False]
 animation_counter = 0
+pacman_score = 0
 move_counter = 0
 
 TIMER.tick(FPS)
@@ -76,8 +77,12 @@ while run:
     if (move_counter == 0):
         pacman.move(pacman_direction, pacman_turn_allowed)
     move_counter = (move_counter + 1) % 5
+
+    #Collect Score
+    pacman_score = pacman.collectScores(pacman_score)
     #Change animationCounter and Render Characters
     animation_counter = renderCharacters(animation_counter, pacman_direction, pacman)
     pygame.display.flip()
 
+print("Total score: ", pacman_score)
 pygame.quit()

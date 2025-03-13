@@ -84,6 +84,15 @@ class Pacman():
 
         return Turns
 
+    def collectScores(self, score):
+        x = self.x - OFFSET_WIDTH + TILE_SIDE
+        y = self.y - OFFSET_HEIGHT + TILE_SIDE
+        if 0 < BOARD[y // TILE_SIDE][x // TILE_SIDE] < 3:
+            BOARD[y // TILE_SIDE][x // TILE_SIDE] = 0
+            score += 1
+        
+        return score
+
     def move(self, direction, turn_allowed):
         if direction == 0 and turn_allowed[0] == True:
             self.x += PACMAN_SPEED
