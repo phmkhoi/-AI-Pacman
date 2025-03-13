@@ -1,49 +1,12 @@
-# from game_setting import pygame, WINDOW_HEIGHT, WINDOW_WIDTH, ANIMATION_FRAME_DURATION
-# import game_setting
-# from ui.game_map import COLUMN_AMOUNT, ROW_AMOUNT
-
-# # Reading animation of Pacman
-# pacmanImages = []
-# for i in range(1, 5):
-#     pacmanImages.append(pygame.transform.scale(pygame.image.load(f'assets/pacman/pacman{i}.png'), (40, 40)))
-
-# #Initialize pacman's position
-# INIT_PACMAN_X = (WINDOW_WIDTH // COLUMN_AMOUNT) * (COLUMN_AMOUNT // 2 - 1)
-# INIT_PACMAN_Y = (WINDOW_HEIGHT // ROW_AMOUNT) * (ROW_AMOUNT - 9) + 12
-
-# class Pacman():
-#     def __init__(self):
-#         self.x = INIT_PACMAN_X
-#         self.y = INIT_PACMAN_Y
-
-#     def Draw(self, direction, counter):
-#         # Define Direction:
-#         # 0: Right, 1: Left, 2: Up, 3: Down
-#         if direction == 0:
-#             game_setting.SCREEN.blit(pacmanImages[counter // ANIMATION_FRAME_DURATION], (self.x, self.y))
-
-#         if direction == 1:
-#             game_setting.SCREEN.blit(pygame.transform.flip(pacmanImages[counter // ANIMATION_FRAME_DURATION], True, False), (self.x, self.y))
-
-#         if direction == 2:
-#             game_setting.SCREEN.blit(pygame.transform.rotate(pacmanImages[counter // ANIMATION_FRAME_DURATION], 90), (self.x, self.y))
-
-#         if direction == 3:
-#             game_setting.SCREEN.blit(pygame.transform.rotate(pacmanImages[counter // ANIMATION_FRAME_DURATION], 270), (self.x, self.y))
-
-    
-#     def GetPosition(self):
-#         return self.x // (WINDOW_WIDTH // COLUMN_AMOUNT), self.y // (WINDOW_HEIGHT // ROW_AMOUNT)
-
 import pygame
 from game_map import WINDOW_HEIGHT, WINDOW_WIDTH, COLUMN_AMOUNT, ROW_AMOUNT, TILE_SIDE, OFFSET_HEIGHT, OFFSET_WIDTH, BOARD
 
 ANIMATION_FRAME_DURATION = 50
 SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 
-pacmanImages = []
+pacman_images = []
 for i in range(1, 5):
-    pacmanImages.append(pygame.transform.scale(pygame.image.load(f'assets/pacman/pacman{i}.png'), (26, 26)))
+    pacman_images.append(pygame.transform.scale(pygame.image.load(f'assets/pacman/pacman{i}.png'), (26, 26)))
 
 # #Initialize pacman's position
 
@@ -62,16 +25,16 @@ class Pacman():
         # Define Direction:
         # 0: Right, 1: Left, 2: Up, 3: Down
         if direction == 0:
-            SCREEN.blit(pacmanImages[counter // ANIMATION_FRAME_DURATION], (self.x, self.y))
+            SCREEN.blit(pacman_images[counter // ANIMATION_FRAME_DURATION], (self.x, self.y))
 
         if direction == 1:
-            SCREEN.blit(pygame.transform.flip(pacmanImages[counter // ANIMATION_FRAME_DURATION], True, False), (self.x, self.y))
+            SCREEN.blit(pygame.transform.flip(pacman_images[counter // ANIMATION_FRAME_DURATION], True, False), (self.x, self.y))
 
         if direction == 2:
-            SCREEN.blit(pygame.transform.rotate(pacmanImages[counter // ANIMATION_FRAME_DURATION], 90), (self.x, self.y))
+            SCREEN.blit(pygame.transform.rotate(pacman_images[counter // ANIMATION_FRAME_DURATION], 90), (self.x, self.y))
 
         if direction == 3:
-            SCREEN.blit(pygame.transform.rotate(pacmanImages[counter // ANIMATION_FRAME_DURATION], 270), (self.x, self.y))
+            SCREEN.blit(pygame.transform.rotate(pacman_images[counter // ANIMATION_FRAME_DURATION], 270), (self.x, self.y))
     
     def checkPosition(self, direction):
         Turns = [False, False, False, False]

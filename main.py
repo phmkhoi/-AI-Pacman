@@ -9,10 +9,10 @@ def initCharacters():
     return pacman
     pass
 
-def renderCharacters(animationCounter, Direction, pacman):
-    animationCounter = (animationCounter + 1) % 199
-    pacman.draw(Direction, animationCounter)
-    return animationCounter
+def renderCharacters(animation_counter, Direction, pacman):
+    animation_counter = (animation_counter + 1) % 199
+    pacman.draw(Direction, animation_counter)
+    return animation_counter
     pass
 
 pygame.init()
@@ -25,10 +25,10 @@ ANIMATION_FRAME_DURATION = 50
 
 # Initialize game variables
 run = True
-pacmanDirection = 0
+pacman_direction = 0
 pacman_direction_command = 0
 pacman_turn_allowed = [False, False, False, False]
-animationCounter = 0
+animation_counter = 0
 move_counter = 0
 
 TIMER.tick(FPS)
@@ -58,26 +58,26 @@ while run:
             
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT and pacman_direction_command == 0:
-                pacman_direction_command = pacmanDirection
+                pacman_direction_command = pacman_direction
             elif event.key == pygame.K_LEFT and pacman_direction_command == 1:
-                pacman_direction_command = pacmanDirection
+                pacman_direction_command = pacman_direction
             elif event.key == pygame.K_UP and pacman_direction_command == 2:
-                pacman_direction_command = pacmanDirection
+                pacman_direction_command = pacman_direction
             elif event.key == pygame.K_DOWN and pacman_direction_command == 3:
-                pacman_direction_commandd = pacmanDirection
+                pacman_direction_commandd = pacman_direction
         
         for i in range(4):
             if pacman_direction_command == i and pacman_turn_allowed[i] == True:
-                pacmanDirection = i
+                pacman_direction = i
     
     #Check Collision
-    pacman_turn_allowed = pacman.checkPosition(pacmanDirection)
+    pacman_turn_allowed = pacman.checkPosition(pacman_direction)
     #Characters Movement
     if (move_counter == 0):
-        pacman.move(pacmanDirection, pacman_turn_allowed)
+        pacman.move(pacman_direction, pacman_turn_allowed)
     move_counter = (move_counter + 1) % 5
     #Change animationCounter and Render Characters
-    animationCounter = renderCharacters(animationCounter, pacmanDirection, pacman)
+    animation_counter = renderCharacters(animation_counter, pacman_direction, pacman)
     pygame.display.flip()
 
 pygame.quit()
