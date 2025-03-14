@@ -1,4 +1,4 @@
-from game_map import OFFSET_HEIGHT, OFFSET_WIDTH, TILE_SIDE, IMAGE_OFFSET, IMAGE_SCALE, pygame
+from game_map import OFFSET_HEIGHT, OFFSET_WIDTH, TILE_SIDE, IMAGE_OFFSET, pygame
 import random
 
 CAGE_TOP_LEFT_X = 12
@@ -11,7 +11,7 @@ HIT_BOX_OFFSET = 5
 HIT_BOX_SIZE = 10
 
 class Ghost:
-    def __init__(self, x_2DCoord, y_2DCoord, target, speed, img, status, direction, board, in_cage):
+    def __init__(self, x_2DCoord, y_2DCoord, target, speed, img_list, status, direction, board, in_cage):
         self.logic_x = x_2DCoord
         self.logic_y = y_2DCoord
 
@@ -19,7 +19,7 @@ class Ghost:
 
         self.target = target
         self.speed = speed
-        self.img = img
+        self.img_list = img_list
         self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)
         self.status = status
         self.direction = direction
@@ -49,6 +49,7 @@ class Ghost:
             "LEFT": "RIGHT",
             "RIGHT": "LEFT"
         }
+        
         self.direction = reversed_direction[self.direction]
 
     def adjustDirectionNotReverse(self, next_direction):
@@ -84,6 +85,9 @@ class Ghost:
             self.in_cage = False
 
     def checkCollision(self):
+        if self.board[self.logic_y][self.logic_x] > 2 and self.display_x == self.logic_x * TILE_SIDE + OFFSET_WIDTH and self.display_y == self.logic_y * TILE_SIDE + OFFSET_HEIGHT:
+            return True
+
         if self.direction == "LEFT":
             if self.board[self.logic_y][self.logic_x - 1] > 2 and self.display_x == self.logic_x * TILE_SIDE + OFFSET_WIDTH:
                 return True
@@ -109,16 +113,19 @@ class Ghost:
                 self.direction = self.getDirection()
         elif self.status == "CHASE":
             if self.in_cage:
-                self.direction = self.getDirection()
-            else:
                 if self.checkTurnable():
                     self.direction = self.getDirection()
+            else:
+                if self.checkTurnable() and self.checkCollision():
+                    self.direction = self.getDirection()
                 
+        # if self.checkTurnable() and self.checkCollision():
+        #     self.direction = self.getDirection()
 
         self.checkInCage()
 
         self.update_counter += 1
-        if self.update_counter % 5 == 0:
+        if self.update_counter % 4 == 0:
             if self.direction == "LEFT":
                 self.display_x -= self.speed
             elif self.direction == "RIGHT":
@@ -135,4 +142,11 @@ class Ghost:
         self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)
 
     def render(self, screen):
-        screen.blit(self.img, (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        if self.direction == "RIGHT":
+            screen.blit(self.img_list[0], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        elif self.direction == "LEFT":
+            screen.blit(self.img_list[1], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        elif self.direction == "UP":
+            screen.blit(self.img_list[2], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+        elif self.direction == "DOWN":
+            screen.blit(self.img_list[3], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))

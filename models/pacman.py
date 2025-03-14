@@ -38,7 +38,6 @@ class Pacman():
         return logic_x, logic_y
 
     def render(self, screen):
-        
         self.update_counter += 1
         if (self.update_counter % 3 == 0):
             if self.frame_counter <= (FRAME_DURATION * (len(self.img_list) - 1) - 1):
@@ -106,7 +105,8 @@ class Pacman():
 
     def update(self, direction_cmd, turns_allowed_list):
         self.update_counter += 1
-        if self.update_counter % 5 == 0:
+
+        if self.update_counter % 4 == 0:
 
             if turns_allowed_list[direction_cmd] == True and ((self.display_x, self.display_y) == (self.logic_x * TILE_SIDE + OFFSET_WIDTH, self.logic_y * TILE_SIDE + OFFSET_HEIGHT)):
                 self.direction = direction_cmd

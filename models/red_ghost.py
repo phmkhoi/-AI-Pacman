@@ -1,4 +1,4 @@
-from models.ghosts import Ghost, IMAGE_OFFSET, IMAGE_SCALE
+from models.ghosts import Ghost
 from algorithms import AStarSearch, getRandomMove, reconstructPath
 
 class RedGhost(Ghost):

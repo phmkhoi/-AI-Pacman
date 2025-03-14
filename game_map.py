@@ -24,9 +24,6 @@ OFFSET_WIDTH = 10
 
 IMAGE_OFFSET = 2
 IMAGE_SCALE = 20
-
-SCORE_X = 15
-SCORE_Y = 620
 # ----------------------------------
 # 32x30 array
 BOARD = [
@@ -65,56 +62,59 @@ BOARD = [
     [6, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 7]
 ]
 
-def printMap(screen):
-    for i in range(len(BOARD)):
-        for j in range(len(BOARD[i])):
-            if BOARD[i][j] == 1:
+def printMap(screen, board_map):
+    for i in range(len(board_map)):
+        for j in range(len(board_map[i])):
+            if board_map[i][j] == 1:
                 pygame.draw.circle(screen, DOT_COLOR, 
                     (j * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT), 4)
             
-            elif BOARD[i][j] == 2:
+            elif board_map[i][j] == 2:
                 pygame.draw.circle(screen, DOT_COLOR, 
                     (j * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT), 7)
             
-            elif BOARD[i][j] == 3:
+            elif board_map[i][j] == 3:
                 pygame.draw.line(screen, WALL_COLOR, 
                     (j * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_WIDTH, i * TILE_SIDE + OFFSET_HEIGHT), 
                     (j * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_WIDTH, i * TILE_SIDE + TILE_SIDE + OFFSET_HEIGHT))
                 
-            elif BOARD[i][j] == 4:
+            elif board_map[i][j] == 4:
                 pygame.draw.line(screen, WALL_COLOR,
                     (j * TILE_SIDE + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT),
                     (j * TILE_SIDE + TILE_SIDE + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT))
                 
-            elif BOARD[i][j] == 5:
+            elif board_map[i][j] == 5:
                 pygame.draw.arc(screen, WALL_COLOR,
                     [(j * TILE_SIDE + TILE_SIDE * 0.5) + OFFSET_WIDTH, (i * TILE_SIDE + TILE_SIDE * 0.5) + OFFSET_HEIGHT,
                     TILE_SIDE, TILE_SIDE], PI/2, PI, 1)
                 
-            elif BOARD[i][j] == 6:
+            elif board_map[i][j] == 6:
                 pygame.draw.arc(screen, WALL_COLOR,
                     [(j * TILE_SIDE + TILE_SIDE * 0.5) + OFFSET_WIDTH, (i * TILE_SIDE - TILE_SIDE * 0.5) + OFFSET_HEIGHT,
                     TILE_SIDE, TILE_SIDE], PI, 3 * PI/2, 1)
                 
-            elif BOARD[i][j] == 7:
+            elif board_map[i][j] == 7:
                 pygame.draw.arc(screen, WALL_COLOR,
                     [(j * TILE_SIDE - TILE_SIDE * 0.5) + OFFSET_WIDTH, (i * TILE_SIDE - TILE_SIDE * 0.5) + OFFSET_HEIGHT,
                     TILE_SIDE, TILE_SIDE], 3 * PI/2, 2 * PI, 1)
                 
-            elif BOARD[i][j] == 8:
+            elif board_map[i][j] == 8:
                 pygame.draw.arc(screen, WALL_COLOR,
                     [(j * TILE_SIDE - TILE_SIDE * 0.5) + OFFSET_WIDTH, (i * TILE_SIDE + TILE_SIDE * 0.5) + OFFSET_HEIGHT,
                     TILE_SIDE, TILE_SIDE], 0, PI/2, 1)
                 
-            elif BOARD[i][j] == 9:
+            elif board_map[i][j] == 9:
                 pygame.draw.line(screen, GATE_COLOR,
                     (j * TILE_SIDE + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT),
                     (j * TILE_SIDE + TILE_SIDE + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT))
 
+def getBoard():
+    return BOARD
+
 def initUI(screen, score):
     screen.fill("black")
-    printMap(screen)
+    # printMap(screen, board_map)
 
-    font = pygame.font.SysFont("comicsansms", 14)
-    text = font.render(f"Score = {score}", True, (255, 255, 255))
-    screen.blit(text, (SCORE_X, SCORE_Y))
+    font = pygame.font.Font("assets/font/PressStart2P-vaV7.ttf", 12)
+    text = font.render("Press \"ESC\" to return to menu", True, (255, 255, 255))
+    screen.blit(text, (15, 700))

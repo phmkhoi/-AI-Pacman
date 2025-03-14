@@ -1,16 +1,24 @@
 import pygame
 import random
-from game_map import initUI, WINDOW_HEIGHT, WINDOW_WIDTH, BOARD, TILE_SIDE, OFFSET_HEIGHT, OFFSET_WIDTH, IMAGE_SCALE
+from game_map import initUI, WINDOW_HEIGHT, WINDOW_WIDTH, getBoard, printMap, IMAGE_SCALE
 from models.blue_ghost import BlueGhost
 from models.red_ghost import RedGhost
 from models.pink_ghost import PinkGhost
 from models.orange_ghost import OrangeGhost
 from models.pacman import Pacman
+from button import Button
 
 # ---------- Get Character Images ----------
-ghost_images_list = []
-for i in range (1, 5):
-    ghost_images_list.append(pygame.transform.scale(pygame.image.load(f'assets/ghost/ghost{i}.png'), (IMAGE_SCALE, IMAGE_SCALE)))
+blue_ghost_images = []
+red_ghost_images = []
+pink_ghost_images = []
+orange_ghost_images = []
+
+for i in range (0, 4):
+    blue_ghost_images.append(pygame.transform.scale(pygame.image.load(f'assets/ghost/blue({i}).png'), (IMAGE_SCALE, IMAGE_SCALE)))
+    red_ghost_images.append(pygame.transform.scale(pygame.image.load(f'assets/ghost/red({i}).png'), (IMAGE_SCALE, IMAGE_SCALE)))
+    pink_ghost_images.append(pygame.transform.scale(pygame.image.load(f'assets/ghost/pink({i}).png'), (IMAGE_SCALE, IMAGE_SCALE)))
+    orange_ghost_images.append(pygame.transform.scale(pygame.image.load(f'assets/ghost/orange({i}).png'), (IMAGE_SCALE, IMAGE_SCALE)))
 
 pacman_frames_list = []
 for i in range(1, 5):
@@ -21,57 +29,58 @@ for i in range(1, 5):
 INIT_BLUE_GHOST_POS_X = 12
 INIT_BLUE_GHOST_POS_Y = 16
 
-INIT_RED_GHOST_POS_X = 14
-INIT_RED_GHOST_POS_Y = 15
+INIT_RED_GHOST_POS_X = 13
+INIT_RED_GHOST_POS_Y = 12
 
-INIT_ORANGE_GHOST_POS_X = 15
+INIT_ORANGE_GHOST_POS_X = 17
 INIT_ORANGE_GHOST_POS_Y = 16
 
-# 14 14
-INIT_PINK_GHOST_POS_X = 15
+INIT_PINK_GHOST_POS_X = 16
 INIT_PINK_GHOST_POS_Y = 12
 
 INIT_PACMAN_POS_X = 14
 INIT_PACMAN_POS_Y = 24
 # ---------------------------------------------------
 
-# ---------- Game Variables ----------
+# ----------------------------- UI Variables -----------------------------
 SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
 TIMER = pygame.time.Clock()
 FPS = 180
 ANIMATION_FRAME_DURATION = 50
 TIMER.tick(FPS)
 
-board_map = BOARD
-run = True
+SCORE_X = 15
+SCORE_Y = 620
+# ---------- Game Variables ----------
 pacman_direction_command = "RIGHT"
 time_counter = 0
 game_score = 0
 status_time = 0
-ghost_status = "SCATTER"
+ghost_status = "CHASE"
+board_map = getBoard()
 
-SCATTER_TIME_LIMIT = 170
-CHASE_TIME_LIMIT = 150
+SCATTER_TIME_LIMIT = 70
+CHASE_TIME_LIMIT = 100
 
 INIT_GHOST_SPEED = 1
 REVERSE_DIRECTION = True
 GHOSTS_OVERLAPPED = False
-HIT_BOX = 3
+HIT_BOX = 1
 # -----------------------------------------------
 
 # ------------------------------------------------------------ Functions ------------------------------------------------------------
-def initCharacters():
+def initCharacters(board_map):
     pacman = Pacman(INIT_PACMAN_POS_X, INIT_PACMAN_POS_Y, 1, pacman_frames_list, "RIGHT", board_map)
-    blue_ghost = BlueGhost(INIT_BLUE_GHOST_POS_X, INIT_BLUE_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, ghost_images_list[3], ghost_status, "UP", board_map, True)
-    red_ghost = RedGhost(INIT_RED_GHOST_POS_X, INIT_RED_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, ghost_images_list[0], ghost_status, "DOWN", board_map, True)
-    orange_ghost = OrangeGhost(INIT_ORANGE_GHOST_POS_X, INIT_ORANGE_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, ghost_images_list[1], ghost_status, "UP", board_map, True)
-    # pink_ghost = PinkGhost(INIT_PINK_GHOST_POS_X, INIT_PINK_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), 1, ghost_images_list[2], ghost_status, "DOWN", board_map, True)
+    blue_ghost = BlueGhost(INIT_BLUE_GHOST_POS_X, INIT_BLUE_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, blue_ghost_images, ghost_status, "UP", board_map, True)
+    red_ghost = RedGhost(INIT_RED_GHOST_POS_X, INIT_RED_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, red_ghost_images, ghost_status, "LEFT", board_map, True)
+    orange_ghost = OrangeGhost(INIT_ORANGE_GHOST_POS_X, INIT_ORANGE_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, orange_ghost_images, ghost_status, "UP", board_map, True)
+    pink_ghost = PinkGhost(INIT_PINK_GHOST_POS_X, INIT_PINK_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), 1, pink_ghost_images, ghost_status, "RIGHT", board_map, True)
 
     ghosts_list = []
     ghosts_list.append(blue_ghost)
     ghosts_list.append(red_ghost)
     ghosts_list.append(orange_ghost)
-    # ghosts_list.append(pink_ghost)
+    ghosts_list.append(pink_ghost)
     return pacman, ghosts_list
 
 def updateGhosts(ghosts_list, target):
@@ -86,27 +95,7 @@ def renderCharacters(pacman, ghosts_list):
     for ghost in ghosts_list:
         ghost.render(SCREEN)
 
-def pauseGame():
-    paused = True
-    while paused:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:  # Press 'P' to unpause
-                    paused = False
-
-        # Display a "Paused" message (optional)
-        font = pygame.font.SysFont("comicsansms", 14)
-        text = font.render("Paused. Press P to resume.", True, (255, 255, 255))
-        SCREEN.blit(text, (15, 600))
-        pygame.display.update()
-
-        # # Limit the frame rate while paused
-        # TIMER.tick(15)
-
-def gameOver(ghosts_list, pacman):
+def checkGameOver(ghosts_list, pacman):
     for ghost in ghosts_list:
         # if (ghost.logic_x == pacman.logic_x) and (ghost.logic_y == pacman.logic_y):
         # if (ghost.hit_box.colliderect(pacman.hit_box)):
@@ -114,7 +103,7 @@ def gameOver(ghosts_list, pacman):
             return True
     return False
 
-def getScore(pacman):
+def getScore(pacman, board_map):
     global game_score
 
     if (board_map[pacman.logic_y][pacman.logic_x] == 1):
@@ -147,9 +136,8 @@ def checkGhostsCollision(ghost, other_ghost):
     return False
 
 pygame.init()
-pacman, ghosts_list = initCharacters()
 
-def makeGhostOverlapped(bool):
+def makeGhostOverlapped(ghosts_list, bool):
     if bool == False:
         for i in range(0, len(ghosts_list) - 1):
             for j in range(i + 1, len(ghosts_list)):
@@ -157,8 +145,13 @@ def makeGhostOverlapped(bool):
                     ghosts_list[i].getReverseDirection()
                     ghosts_list[j].getReverseDirection()
 
-def renderStatusTimer():
-    global time_counter, status_time, ghost_status, ghosts_list
+def renderScore(screen, score):
+    font = pygame.font.Font("assets/font/PressStart2P-vaV7.ttf", 14)
+    text = font.render(f"Score = {score}", True, (255, 255, 255))
+    screen.blit(text, (SCORE_X, SCORE_Y))
+
+def renderStatusTimer(ghosts_list):
+    global time_counter, status_time, ghost_status
 
     time_counter += 1
     if time_counter % 60 == 0:
@@ -167,50 +160,146 @@ def renderStatusTimer():
         else:
             status_time -= 1
 
-    font = pygame.font.SysFont("comicsansms", 14)
+    font = pygame.font.Font("assets/font/PressStart2P-vaV7.ttf", 14)
     if (ghost_status == "CHASE"):
-        text = font.render(f"CHASE: {status_time}", True, (255, 255, 255))
+        text = font.render(f"Chase Time: {status_time}", True, (255, 255, 255))
     elif (ghost_status == "SCATTER"):
-        text = font.render(f"SCATTER: {status_time}", True, (255, 255, 255))
-    SCREEN.blit(text, (15, 630))
+        text = font.render(f"Scatter Time: {status_time}", True, (255, 255, 255))
+    SCREEN.blit(text, (15, 640))
 
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 
-# --------------------------------------------------------- Main game loop ---------------------------------------------------------
-while run:
-    initUI(SCREEN, game_score)
-    renderStatusTimer()
+# ------------------------------------------------ SCREEN ------------------------------------------------
+def main_menu():
+    pygame.event.clear()
+    pygame.display.set_caption("MENU")
+    button_choice = 0
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+    arrow_button = Button(pos = (50, 400 + button_choice * 60), img = pygame.image.load(f'assets/button/arrow.png'))
+    game_mode_button = Button(pos = (100, 400), img = pygame.image.load(f'assets/button/game_mode.png'))
+    test_mode_button = Button(pos = (100, 460), img = pygame.image.load(f'assets/button/test_mode.png'))
+    exit_button = Button(pos = (172, 520), img = pygame.image.load(f'assets/button/exit.png'))
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
+    while True:
+        SCREEN.fill("black")
+        SCREEN.blit(pygame.transform.scale(pygame.image.load(f'assets/title.png'), (470, 200)), (13, 70))
+
+        for button in [game_mode_button, test_mode_button, exit_button, arrow_button]:
+            button.render(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    button_choice -= 1
+                elif event.key == pygame.K_DOWN:
+                    button_choice += 1
+                elif event.key == pygame.K_RETURN:
+                    if button_choice == 0:
+                        game_mode()
+                    elif button_choice == 1:
+                        # test_mode()
+                        pass
+                    elif button_choice == 2:
+                        pygame.quit()
+
+            if button_choice < 0:
+                    button_choice = 2
+            elif button_choice > 2:
+                button_choice = 0
+
+        arrow_button.update((50, 400 + button_choice * 60))
+        pygame.display.update()
+
+def game_over_screen():
+    global game_score
+
+    game_score = 0
+
+    SCREEN.fill("black")
+    
+    font = pygame.font.Font("assets/font/Emulogic-zrEw.ttf", 50)
+    text = font.render("GAME OVER", True, "#b1a04d")
+    SCREEN.blit(text, (20, 300))
+    pygame.display.update()
+    pygame.time.wait(3000)
+
+def game_mode():
+    global board_map
+
+    pacman, ghosts_list = initCharacters(board_map)
+
+    pygame.event.clear()
+    pygame.display.set_caption("GAME MODE")
+    global pacman_direction_command
+    game_run = True
+    waiting_for_key = True
+
+    board_map = getBoard()
+    while game_run:
+
+        initUI(SCREEN, game_score)
+        printMap(SCREEN, board_map)      
+        renderCharacters(pacman, ghosts_list)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_run = False
+                
+            if waiting_for_key and event.type == pygame.KEYDOWN:
+                waiting_for_key = False
+
+        if not waiting_for_key:
+            renderCharacters(pacman, ghosts_list)
+            renderStatusTimer(ghosts_list)
+            renderScore(SCREEN, game_score)
+
+            pressed_key = pygame.key.get_pressed()
+
+            if pressed_key[pygame.K_RIGHT]:
                 pacman_direction_command = "RIGHT"
-            elif event.key == pygame.K_LEFT:
+            elif pressed_key[pygame.K_LEFT]:
                 pacman_direction_command = "LEFT"
-            elif event.key == pygame.K_UP:
+            elif pressed_key[pygame.K_UP]:
                 pacman_direction_command = "UP"
-            elif event.key == pygame.K_DOWN:
+            elif pressed_key[pygame.K_DOWN]:
                 pacman_direction_command = "DOWN"
+            elif pressed_key[pygame.K_ESCAPE]:
+                game_run = False
+                pygame.time.wait(1500)
+                game_over_screen()
+                main_menu()
 
-    pacman_turns_allowed_list = pacman.getTurnsAllowed(pacman_direction_command)
+            pacman_turns_allowed_list = pacman.getTurnsAllowed(pacman_direction_command)
 
-    makeGhostOverlapped(False)  
+            makeGhostOverlapped(ghosts_list, False)  
 
-    updateGhosts(ghosts_list, pacman.getPosition())
-    updatePacman(pacman, pacman_direction_command, pacman_turns_allowed_list)
-    getScore(pacman)
+            updateGhosts(ghosts_list, pacman.getPosition())
+            updatePacman(pacman, pacman_direction_command, pacman_turns_allowed_list)
+            getScore(pacman, board_map)
+
+            if (checkGameOver(ghosts_list, pacman)):
+                game_run = False
+                pygame.time.wait(1500)
+                game_over_screen()
+                main_menu()
+        else:
+            font = pygame.font.Font("assets/font/PressStart2P-vaV7.ttf", 14)
+            text = font.render("Press any key to start", True, (255, 255, 255))
+            SCREEN.blit(text, (15, 620))
+        pygame.display.update()
+
+    pygame.quit()
+
+def test_mode():
+    pass
+
+# --------------------------------------------------------------------------------------------------------
 
 
-    renderCharacters(pacman, ghosts_list)
 
-    if (gameOver(ghosts_list, pacman)):
-        pauseGame()
-        run = False
-
-    pygame.display.flip()
-
-pygame.quit()
+# -------------------------------------------- MAIN --------------------------------------------
+main_menu()
