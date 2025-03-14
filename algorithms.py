@@ -1,5 +1,6 @@
 from queue import Queue
 from heapq import heappop, heappush
+import random
 
 def BFSSearch(board, start, end):
     q = Queue()
@@ -104,11 +105,22 @@ def DFSSearch(board, start, end):
             new_pos = (current_pos[0] + dx, current_pos[1] + dy)
 
             # Check bounds and walkable tiles
-            if (0 <= new_pos[0] < len(board)) and (0 <= new_pos[1] < len(board[0])) and (board[new_pos[0]][new_pos[1]] != 1) and (new_pos not in visited):
+            if (0 <= new_pos[0] < len(board)) and (0 <= new_pos[1] < len(board[0])) and (board[new_pos[0]][new_pos[1]] < 3) and (new_pos not in visited):
                 stack.append(new_pos)
                 tracer[new_pos] = current_pos
 
     return tracer
+
+def getRandomMove(board, cur_pos):
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    possible_moves = []
+
+    for dx, dy in directions:
+        new_pos = (cur_pos[0] + dx, cur_pos[1] + dy)
+        if (0 <= new_pos[0] < len(board)) and (0 <= new_pos[1] < len(board[0])) and (board[new_pos[0]][new_pos[1]] < 3):
+            possible_moves.append(new_pos)
+
+    return possible_moves[random.randint(0, len(possible_moves) - 1)]
 
 
 def reconstructPath(tracer, start, end):

@@ -3,12 +3,8 @@ from game_map import TILE_SIDE, OFFSET_HEIGHT, OFFSET_WIDTH, IMAGE_OFFSET
 
 FRAME_DURATION = 30
 RADIUS = TILE_SIDE // 2 - 1
-# SCREEN = pygame.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
-
-# pacman_images = []
-# for i in range(1, 5):
-#     pacman_images.append(pygame.transform.scale(pygame.image.load(f'assets/pacman/pacman{i}.png'), (26, 26)))
-
+HIT_BOX_OFFSET = 5
+HIT_BOX_SIZE = 10
 
 class Pacman():
     def __init__(self, x_2DCoord, y_2DCoord, speed, img_list, direction, board):
@@ -20,6 +16,7 @@ class Pacman():
         self.img_list = img_list
         self.direction = direction
         self.board = board
+        self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)
 
         self.update_counter = 0
         self.frame_counter = 0
@@ -41,7 +38,7 @@ class Pacman():
         return logic_x, logic_y
 
     def render(self, screen):
-
+        
         self.update_counter += 1
         if (self.update_counter % 3 == 0):
             if self.frame_counter <= (FRAME_DURATION * (len(self.img_list) - 1) - 1):
@@ -125,3 +122,4 @@ class Pacman():
                     self.display_y += self.speed
         
         self.logic_x, self.logic_y = self.turnDisplayToLogic()
+        self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)
