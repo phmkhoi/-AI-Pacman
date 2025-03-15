@@ -78,9 +78,9 @@ def initCharacters(board_map):
     pink_ghost = PinkGhost(INIT_PINK_GHOST_POS_X, INIT_PINK_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), 1, pink_ghost_images, ghost_status, "RIGHT", board_map, True)
 
     ghosts_list = []
-    ghosts_list.append(blue_ghost)
-    ghosts_list.append(red_ghost)
-    ghosts_list.append(orange_ghost)
+    #ghosts_list.append(blue_ghost)
+    #ghosts_list.append(red_ghost)
+    #ghosts_list.append(orange_ghost)
     ghosts_list.append(pink_ghost)
     return pacman, ghosts_list
 

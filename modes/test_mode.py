@@ -50,6 +50,16 @@ def initCharacters(board_map):
 def updateGhost(ghost, target):
     ghost.update(target)
 
+def getPeakMemory(peak_memory, ghost, target):
+    memory = ghost.getMemory(target)
+    if (peak_memory < memory):
+        return memory
+    return peak_memory
+
+def getExpandNodes(expand_nodes, ghost, target):
+    expand_nodes += ghost.getExpandNodes(target)
+    return expand_nodes
+
 def renderOption(screen, title_font, game_font):
     #title = "TEST MODE"
     title_surface = title_font.render(f'TEST MODE', True, (255, 255, 0))
@@ -91,20 +101,33 @@ def renderOption(screen, title_font, game_font):
     level_surface = game_font.render(f'[4] Level 4: Pink ghost using BFS', True, (255, 153, 255))
     level_rect = level_surface.get_rect(left = (WINDOW_WIDTH * 13// 12), top = (WINDOW_HEIGHT * 2 // 3 + 110))
     screen.blit(level_surface, level_rect)
+
 def renderCharacters(screen, pacman, ghost):
     pacman.render(screen)
     ghost.render(screen)
 
 def renderDuration(screen, game_font, start_time, end_time):
     duration = (end_time - start_time) / 1000
-    duration_surface = game_font.render(f'Duration: {duration}s', True, (255, 255, 255))
-    duration_rect =  duration_surface.get_rect(left = (WINDOW_WIDTH // 12), top = (WINDOW_HEIGHT * 11 // 12))
+    duration_surface = game_font.render(f'Duration: {round(duration , 3)}s', True, (255, 255, 255))
+    duration_rect =  duration_surface.get_rect(left = (WINDOW_WIDTH // 12), top = (WINDOW_HEIGHT * 11 // 12) - 25)
     screen.blit(duration_surface, duration_rect)
+
+def renderMemory(screen, game_font, memory):
+    memory_kb = memory / 1024
+    memory_surface = game_font.render(f'Memory Usage: {round(memory_kb, 3)} KB', True, (255, 255, 255))
+    memory_rect =  memory_surface.get_rect(left = (WINDOW_WIDTH // 12), top = (WINDOW_HEIGHT * 11 // 12))
+    screen.blit(memory_surface, memory_rect)
+
+def renderExpandNodes(screen, game_font, expand_nodes):
+    expand_nodes_surface = game_font.render(f'Expand Nodes: {expand_nodes}', True, (255, 255, 255))
+    expand_nodes_rect =  expand_nodes_surface.get_rect(left = (WINDOW_WIDTH // 12), top = (WINDOW_HEIGHT * 11 // 12) + 25)
+    screen.blit(expand_nodes_surface, expand_nodes_rect)
     
 def processOver(ghost, pacman):
     if (pygame.Rect.colliderect(ghost.hit_box, pacman.hit_box)):
         return True
     return False
+
 def testMode():
     SCREEN = pygame.display.set_mode([WINDOW_WIDTH * 2, WINDOW_HEIGHT])
 
@@ -120,6 +143,8 @@ def testMode():
     process_over = False
     start_time = 0
     end_time = 0
+    peak_memory = 0
+    expand_nodes = 0
 
     character_list = [pacman, ghost_list[selected_ghost]]
 
@@ -153,16 +178,16 @@ def testMode():
                     elif event.key == pygame.K_TAB:
                         choosen_character = choosen_character ^ 1
                     elif event.key == pygame.K_UP:
-                        print("UP")
+                        #print("UP")
                         character_list[choosen_character].move("UP")
                     elif event.key == pygame.K_DOWN:
-                        print("DOWN")
+                        #print("DOWN")
                         character_list[choosen_character].move("DOWN")
                     elif event.key == pygame.K_LEFT:
-                        print("LEFT")
+                        #print("LEFT")
                         character_list[choosen_character].move("LEFT")
                     elif event.key == pygame.K_RIGHT:
-                        print("RIGHT")
+                        #print("RIGHT")
                         character_list[choosen_character].move("RIGHT")
 
                 if event.key == pygame.K_r and process_over == False:
@@ -176,8 +201,15 @@ def testMode():
                     already_selected = False
                     process_over = False
                     process_active = True
+                    start_time = 0
+                    end_time = 0
+                    peak_memory = 0
+                    expand_nodes = 0
+    
 
         if already_selected == True and process_over == False:
+            peak_memory = getPeakMemory(peak_memory, ghost_list[selected_ghost], pacman.getPosition())
+            expand_nodes = getExpandNodes(expand_nodes, ghost_list[selected_ghost], pacman.getPosition())
             updateGhost(ghost_list[selected_ghost], pacman.getPosition())
         
         process_over = processOver(ghost_list[selected_ghost], pacman)
@@ -186,6 +218,8 @@ def testMode():
                 end_time = pygame.time.get_ticks()
                 process_active = False
             renderDuration(SCREEN, game_font, start_time, end_time)
+            renderMemory(SCREEN, game_font, peak_memory)
+            renderExpandNodes(SCREEN, game_font, expand_nodes)
         renderOption(SCREEN, title_font, game_font)
         renderCharacters(SCREEN, pacman, ghost_list[selected_ghost])
         pygame.display.flip()

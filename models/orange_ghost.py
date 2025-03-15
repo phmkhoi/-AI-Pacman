@@ -1,6 +1,6 @@
 from models.ghosts import Ghost
-from algorithms import UCSSearch, getRandomMove, reconstructPath
-
+from algorithms import UCSSearch, getRandomMove, reconstructPath, UCSSearchCountExpandNodes
+import tracemalloc
 class OrangeGhost(Ghost):
     def __init__(self, x_2DCoord, y_2DCoord, target, speed, img, status, direction, board, in_cage):
         super().__init__(x_2DCoord, y_2DCoord, target, speed, img, status, direction, board, in_cage)
@@ -23,6 +23,28 @@ class OrangeGhost(Ghost):
             return self.adjustDirectionNotReverse("RIGHT")
         else:
             return self.adjustDirectionNotReverse("LEFT")
+
+    def getMemory(self, target):
+        self.target = target
+        if self.status == "CHASE":
+             if not self.in_cage:
+                if self.checkTurnable() or self.checkCollision():
+                    tracemalloc.start()
+                    UCSSearch(self.board, (self.logic_y, self.logic_x), self.target)
+                    memory = tracemalloc.get_traced_memory()
+                    tracemalloc.stop()
+                    return memory[1]
+        return 0
+    
+    def getExpandNodes(self, target):
+        self.target = target
+        if self.status == "CHASE":
+             if not self.in_cage:
+                if self.checkTurnable() or self.checkCollision():
+                   count_nodes = UCSSearchCountExpandNodes(self.board, (self.logic_y, self.logic_x), self.target)
+                   return count_nodes
+        
+        return 0
         
     def getPath():
         tracer = UCSSearch(self.board, (self.logic_y, self.logic_x), self.target)

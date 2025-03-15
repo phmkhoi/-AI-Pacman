@@ -26,6 +26,7 @@ class Ghost:
         self.board = board
         self.update_counter = 0
         self.in_cage = in_cage
+        self.path = []
 
     def turnLogicToDisplay(self):
         display_x = OFFSET_WIDTH + self.logic_x * TILE_SIDE
@@ -106,6 +107,12 @@ class Ghost:
     def getDirection(self):
         pass
 
+    def getMemory(self, target):
+        pass
+    
+    def getExpandNodes(self, target):
+        pass
+    
     def getPath(self):
         pass
 
