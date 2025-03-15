@@ -118,3 +118,8 @@ def initUI(screen, score):
     font = pygame.font.SysFont("comicsansms", 14)
     text = font.render(f"Score = {score}", True, (255, 255, 255))
     screen.blit(text, (SCORE_X, SCORE_Y))
+
+
+def initUITestMode(screen):
+    screen.fill("black")
+    printMap(screen)

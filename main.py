@@ -6,7 +6,7 @@ from models.red_ghost import RedGhost
 from models.pink_ghost import PinkGhost
 from models.orange_ghost import OrangeGhost
 from models.pacman import Pacman
-
+from test_mode import testMode
 # ---------- Get Character Images ----------
 ghost_images_list = []
 for i in range (1, 5):
@@ -65,13 +65,13 @@ def initCharacters():
     blue_ghost = BlueGhost(INIT_BLUE_GHOST_POS_X, INIT_BLUE_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, ghost_images_list[3], ghost_status, "UP", board_map, True)
     red_ghost = RedGhost(INIT_RED_GHOST_POS_X, INIT_RED_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, ghost_images_list[0], ghost_status, "DOWN", board_map, True)
     orange_ghost = OrangeGhost(INIT_ORANGE_GHOST_POS_X, INIT_ORANGE_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), INIT_GHOST_SPEED, ghost_images_list[1], ghost_status, "UP", board_map, True)
-    # pink_ghost = PinkGhost(INIT_PINK_GHOST_POS_X, INIT_PINK_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), 1, ghost_images_list[2], ghost_status, "DOWN", board_map, True)
+    pink_ghost = PinkGhost(INIT_PINK_GHOST_POS_X, INIT_PINK_GHOST_POS_Y, (INIT_PACMAN_POS_Y, INIT_PACMAN_POS_X), 1, ghost_images_list[2], ghost_status, "DOWN", board_map, True)
 
     ghosts_list = []
     ghosts_list.append(blue_ghost)
     ghosts_list.append(red_ghost)
     ghosts_list.append(orange_ghost)
-    # ghosts_list.append(pink_ghost)
+    ghosts_list.append(pink_ghost)
     return pacman, ghosts_list
 
 def updateGhosts(ghosts_list, target):
@@ -174,10 +174,13 @@ def renderStatusTimer():
         text = font.render(f"SCATTER: {status_time}", True, (255, 255, 255))
     SCREEN.blit(text, (15, 630))
 
+
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 
 # --------------------------------------------------------- Main game loop ---------------------------------------------------------
+testMode()
+"""
 while run:
     initUI(SCREEN, game_score)
     renderStatusTimer()
@@ -214,3 +217,4 @@ while run:
     pygame.display.flip()
 
 pygame.quit()
+"""

@@ -5,7 +5,7 @@ import random
 def BFSSearch(board, start, end):
     q = Queue()
     q.put(start)
-    directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+    directions = [(1, 0), (0, -1), (-1, 0), (0, 1)]
     visited = set()
     tracer = {}
 
@@ -33,6 +33,7 @@ def UCSSearch(board, start, end):
     costs = {start: 0}
 
     heappush(frontier, start)
+    visited.add(start)
 
     while frontier:
         current_pos = heappop(frontier)
@@ -50,7 +51,21 @@ def UCSSearch(board, start, end):
                     costs[new_pos] = new_cos
                     heappush(frontier, new_pos)
                     tracer[new_pos] = current_pos
+                    visited.add(new_pos)
 
+        min_cost = costs[frontier[0]]
+        check_min_cost = 0
+        for i in range(len(frontier)):
+            if min_cost > costs[frontier[i]]:
+                min_cost = costs[frontier[i]]
+                check_min_cost = i
+        
+        if check_min_cost != 0:
+            tmp = frontier[0]
+            frontier[0] = frontier[check_min_cost]
+            frontier[check_min_cost] = tmp
+        
+        #print(frontier[0], end = '\n')
     return tracer
 
 def mahattan(curr, end):
