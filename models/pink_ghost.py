@@ -1,5 +1,5 @@
 from models.ghosts import Ghost
-from algorithms import DFSSearch, getRandomMove, reconstructPath
+from algorithms import IDSSearch, getRandomMove, reconstructPath
 
 class PinkGhost(Ghost):
     def __init__(self, x_2DCoord, y_2DCoord, target, speed, img, status, direction, board, in_cage):
@@ -7,11 +7,11 @@ class PinkGhost(Ghost):
 
     def getDirection(self):
         if self.status == "CHASE":
-            tracer = DFSSearch(self.board, (self.logic_y, self.logic_x), self.target)
+            tracer = IDSSearch(self.board, (self.logic_y, self.logic_x), self.target)
             path = reconstructPath(tracer, (self.logic_y, self.logic_x), self.target)
 
             next_tile = path[0]
-            
+
         elif self.status == "SCATTER":
             next_tile = getRandomMove(self.board, (self.logic_y, self.logic_x))
 
@@ -23,3 +23,8 @@ class PinkGhost(Ghost):
             return self.adjustDirectionNotReverse("RIGHT")
         else:
             return self.adjustDirectionNotReverse("LEFT")
+        
+    def getPath(self):
+        tracer = IDSSearch(self.board, (self.logic_y, self.logic_x), self.target)
+        path = reconstructPath(tracer, (self.logic_y, self.logic_x), self.target)
+        return path

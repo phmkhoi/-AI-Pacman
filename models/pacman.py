@@ -38,7 +38,7 @@ class Pacman():
         return logic_x, logic_y
 
     def render(self, screen):
-        self.update_counter += 1
+        # self.update_counter += 1
         if (self.update_counter % 3 == 0):
             if self.frame_counter <= (FRAME_DURATION * (len(self.img_list) - 1) - 1):
                 self.frame_counter += 1
@@ -106,7 +106,7 @@ class Pacman():
     def update(self, direction_cmd, turns_allowed_list):
         self.update_counter += 1
 
-        if self.update_counter % 4 == 0:
+        if self.update_counter % 3 == 0:
 
             if turns_allowed_list[direction_cmd] == True and ((self.display_x, self.display_y) == (self.logic_x * TILE_SIDE + OFFSET_WIDTH, self.logic_y * TILE_SIDE + OFFSET_HEIGHT)):
                 self.direction = direction_cmd
@@ -122,4 +122,23 @@ class Pacman():
                     self.display_y += self.speed
         
         self.logic_x, self.logic_y = self.turnDisplayToLogic()
+        self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)
+
+    def move(self, direction):
+        if direction == 'UP':
+            if (self.board[self.logic_y - 1][self.logic_x] < 3):
+                self.logic_y -= 1
+        elif direction == 'DOWN':
+            if (self.board[self.logic_y + 1][self.logic_x] < 3):
+                self.logic_y += 1
+        elif direction == 'LEFT':
+            if (self.board[self.logic_y][self.logic_x - 1] < 3):
+                self.logic_x -= 1
+        elif direction == 'RIGHT':
+            if (self.board[self.logic_y][self.logic_x + 1] < 3):
+                self.logic_x += 1
+
+        self.direction = direction
+        self.display_x, self.display_y = self.turnLogicToDisplay()
+        self.update_counter = 0
         self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)

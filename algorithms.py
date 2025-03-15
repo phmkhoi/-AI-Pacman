@@ -33,6 +33,7 @@ def UCSSearch(board, start, end):
     costs = {start: 0}
 
     heappush(frontier, start)
+    visited.add(start)
 
     while frontier:
         current_pos = heappop(frontier)
@@ -50,7 +51,20 @@ def UCSSearch(board, start, end):
                     costs[new_pos] = new_cos
                     heappush(frontier, new_pos)
                     tracer[new_pos] = current_pos
+                    visited.add(new_pos)
 
+        min_cost = costs[frontier[0]]
+        check_min_cost = 0
+        for i in range(len(frontier)):
+            if min_cost > costs[frontier[i]]:
+                min_cost = costs[frontier[i]]
+                check_min_cost = i
+        
+        if check_min_cost != 0:
+            tmp = frontier[0]
+            frontier[0] = frontier[check_min_cost]
+            frontier[check_min_cost] = tmp
+        
     return tracer
 
 def mahattan(curr, end):
@@ -85,31 +99,43 @@ def AStarSearch(board, start, end):
 
     return tracer
 
-def DFSSearch(board, start, end):
-    stack = [start]  # Stack for DFS
+def DLSSearch(board, start, end, depth_limit):
+    stack = [(start, 0)]  # Stack for DFS
     visited = set()
-    tracer = {}  # To track the path
-
+    tracer = {}
+    
     while stack:
-        current_pos = stack.pop()
+        current_pos, depth = stack.pop()
         if current_pos in visited:
             continue
 
         visited.add(current_pos)
 
         if current_pos == end:
-            break
+            return tracer
 
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        for dx, dy in directions:
-            new_pos = (current_pos[0] + dx, current_pos[1] + dy)
+        if depth < depth_limit:
+            directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+            for dx, dy in directions:
+                new_pos = (current_pos[0] + dx, current_pos[1] + dy)
 
-            # Check bounds and walkable tiles
-            if (0 <= new_pos[0] < len(board)) and (0 <= new_pos[1] < len(board[0])) and (board[new_pos[0]][new_pos[1]] < 3) and (new_pos not in visited):
-                stack.append(new_pos)
-                tracer[new_pos] = current_pos
+                # Check bounds and walkable tiles
+                if (0 <= new_pos[0] < len(board)) and (0 <= new_pos[1] < len(board[0])) and (board[new_pos[0]][new_pos[1]] < 3) and (new_pos not in visited):
+                    stack.append((new_pos, depth + 1))
+                    tracer[new_pos] = current_pos
+                    
+    return None
 
-    return tracer
+def IDSSearch(board, start, end):
+    tracer = {}
+
+    depth = 0
+    while True:
+        if tracer:
+            return tracer
+
+        tracer = DLSSearch(board, start, end, depth)
+        depth += 1
 
 def getRandomMove(board, cur_pos):
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]

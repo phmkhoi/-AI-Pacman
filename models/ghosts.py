@@ -106,6 +106,9 @@ class Ghost:
     def getDirection(self):
         pass
 
+    def getPath(self):
+        pass
+
     def update(self, target):
         
         if self.status == "SCATTER":
@@ -113,19 +116,20 @@ class Ghost:
                 self.direction = self.getDirection()
         elif self.status == "CHASE":
             if self.in_cage:
-                if self.checkTurnable():
-                    self.direction = self.getDirection()
+                # if self.checkTurnable():
+                #     self.direction = self.getDirection()
+                pass
             else:
-                if self.checkTurnable() and self.checkCollision():
+                if self.checkTurnable() or self.checkCollision():
                     self.direction = self.getDirection()
                 
         # if self.checkTurnable() and self.checkCollision():
-        #     self.direction = self.getDirection()
+        #     self.direction = self.getDirection() 
 
         self.checkInCage()
 
         self.update_counter += 1
-        if self.update_counter % 4 == 0:
+        if self.update_counter % 3 == 0:
             if self.direction == "LEFT":
                 self.display_x -= self.speed
             elif self.direction == "RIGHT":
@@ -141,6 +145,12 @@ class Ghost:
         self.target = target
         self.hit_box = pygame.Rect(self.display_x + HIT_BOX_OFFSET, self.display_y + HIT_BOX_OFFSET, HIT_BOX_SIZE, HIT_BOX_SIZE)
 
+    def printPath(self, screen):
+        path = self.getPath()
+        for tile in path:
+            x, y = (tile[0] * TILE_SIDE + OFFSET_HEIGHT) + TILE_SIDE // 2, (tile[1] * TILE_SIDE + OFFSET_WIDTH) + TILE_SIDE // 2
+            pygame.draw.circle(screen, (255, 0, 0), (y, x), 5)
+
     def render(self, screen):
         if self.direction == "RIGHT":
             screen.blit(self.img_list[0], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
@@ -150,3 +160,21 @@ class Ghost:
             screen.blit(self.img_list[2], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
         elif self.direction == "DOWN":
             screen.blit(self.img_list[3], (self.display_x - IMAGE_OFFSET, self.display_y - IMAGE_OFFSET))
+
+    def move(self, direction):
+        if direction == 'UP':
+            if (self.board[self.logic_y - 1][self.logic_x] < 3):
+                self.logic_y -= 1
+        elif direction == 'DOWN':
+            if (self.board[self.logic_y + 1][self.logic_x] < 3):
+                self.logic_y += 1
+        elif direction == 'LEFT':
+            if (self.board[self.logic_y][self.logic_x - 1] < 3):
+                self.logic_x -= 1
+        elif direction == 'RIGHT':
+            if (self.board[self.logic_y][self.logic_x + 1] < 3):
+                self.logic_x += 1
+
+        self.direction = direction
+        self.display_x, self.display_y = self.turnLogicToDisplay()
+        self.update_counter = 0

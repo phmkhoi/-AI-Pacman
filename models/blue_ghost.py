@@ -23,3 +23,8 @@ class BlueGhost(Ghost):
             return self.adjustDirectionNotReverse("RIGHT")
         else:
             return self.adjustDirectionNotReverse("LEFT")
+        
+    def getPath(self):
+        tracer = BFSSearch(self.board, (self.logic_y, self.logic_x), self.target)
+        path = reconstructPath(tracer, (self.logic_y, self.logic_x), self.target)
+        return path

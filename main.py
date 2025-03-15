@@ -1,12 +1,13 @@
 import pygame
 import random
-from game_map import initUI, WINDOW_HEIGHT, WINDOW_WIDTH, getBoard, printMap, IMAGE_SCALE
+from game_map import initUI, WINDOW_HEIGHT, WINDOW_WIDTH, printMap, IMAGE_SCALE, BOARD
 from models.blue_ghost import BlueGhost
 from models.red_ghost import RedGhost
 from models.pink_ghost import PinkGhost
 from models.orange_ghost import OrangeGhost
 from models.pacman import Pacman
 from button import Button
+from modes.test_mode import testMode
 
 # ---------- Get Character Images ----------
 blue_ghost_images = []
@@ -57,7 +58,7 @@ time_counter = 0
 game_score = 0
 status_time = 0
 ghost_status = "CHASE"
-board_map = getBoard()
+score_tiles = {}
 
 SCATTER_TIME_LIMIT = 70
 CHASE_TIME_LIMIT = 100
@@ -109,9 +110,12 @@ def getScore(pacman, board_map):
     if (board_map[pacman.logic_y][pacman.logic_x] == 1):
         board_map[pacman.logic_y][pacman.logic_x] = 0
         game_score += 1
+        score_tiles[(pacman.logic_y, pacman.logic_x)] = 1
+
     elif (board_map[pacman.logic_y][pacman.logic_x] == 2):
         board_map[pacman.logic_y][pacman.logic_x] = 0
         game_score += 10
+        score_tiles[(pacman.logic_y, pacman.logic_x)] = 2
 
 def setGhostsStatus(ghosts_list, status):
     for ghost in ghosts_list:
@@ -167,6 +171,13 @@ def renderStatusTimer(ghosts_list):
         text = font.render(f"Scatter Time: {status_time}", True, (255, 255, 255))
     SCREEN.blit(text, (15, 640))
 
+def initMap(board):
+    if len(score_tiles) > 0:
+        for tile in score_tiles:
+            score = score_tiles[tile]
+            board[tile[0]][tile[1]] = score
+    score_tiles.clear()
+
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -201,8 +212,7 @@ def main_menu():
                     if button_choice == 0:
                         game_mode()
                     elif button_choice == 1:
-                        # test_mode()
-                        pass
+                        testMode()
                     elif button_choice == 2:
                         pygame.quit()
 
@@ -228,20 +238,20 @@ def game_over_screen():
     pygame.time.wait(3000)
 
 def game_mode():
-    global board_map
-
+    board_map = BOARD
     pacman, ghosts_list = initCharacters(board_map)
 
     pygame.event.clear()
     pygame.display.set_caption("GAME MODE")
     global pacman_direction_command
-    game_run = True
+    game_run = True  
     waiting_for_key = True
 
-    board_map = getBoard()
+    initMap(board_map)
+
     while game_run:
 
-        initUI(SCREEN, game_score)
+        initUI(SCREEN)
         printMap(SCREEN, board_map)      
         renderCharacters(pacman, ghosts_list)
 
@@ -293,9 +303,6 @@ def game_mode():
         pygame.display.update()
 
     pygame.quit()
-
-def test_mode():
-    pass
 
 # --------------------------------------------------------------------------------------------------------
 

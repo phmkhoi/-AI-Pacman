@@ -42,9 +42,9 @@ BOARD = [
     [3, 0, 0, 0,  0, 0, 3, 1,  3, 3, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  3, 3, 1, 3,  0, 0, 0, 0,  0, 3],
     [7, 0, 0, 0,  0, 0, 3, 1,  3, 3, 0, 5,  4, 4, 0, 0,  4, 4, 8, 0,  3, 3, 1, 3,  0, 0, 0, 0,  0, 6],
     [5, 4, 4, 4,  4, 4, 7, 1,  6, 7, 0, 3,  0, 0, 0, 0,  0, 0, 3, 0,  6, 7, 1, 6,  4, 4, 4, 4,  4, 8],
-    [3, 0, 0, 0,  0, 0, 0, 1,  0, 0, 0, 3,  0, 0, 0, 0,  0, 0, 3, 0,  0, 0, 1, 0,  0, 0, 0, 0,  0, 3],
+    [3, 0, 0, 0,  0, 0, 0, 1,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 1, 0,  0, 0, 0, 0,  0, 3],
     [6, 4, 4, 4,  4, 4, 8, 1,  5, 8, 0, 3,  0, 0, 0, 0,  0, 0, 3, 0,  5, 8, 1, 5,  4, 4, 4, 4,  4, 7],
-    [8, 0, 0, 0,  0, 0, 3, 1,  3, 3, 0, 6,  4, 4, 4, 4,  4, 4, 7, 0,  3, 3, 1, 3,  0, 0, 0, 0,  0, 5],
+    [8, 0, 0, 0,  0, 0, 3, 1,  3, 3, 0, 6,  4, 4, 0, 0,  4, 4, 7, 0,  3, 3, 1, 3,  0, 0, 0, 0,  0, 5],
     [3, 0, 0, 0,  0, 0, 3, 1,  3, 3, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  3, 3, 1, 3,  0, 0, 0, 0,  0, 3],
     [3, 0, 0, 0,  0, 0, 3, 1,  3, 3, 0, 5,  4, 4, 4, 4,  4, 4, 8, 0,  3, 3, 1, 3,  0, 0, 0, 0,  0, 3],
     [3, 5, 4, 4,  4, 4, 7, 1,  6, 7, 0, 6,  4, 4, 8, 5,  4, 4, 7, 0,  6, 7, 1, 6,  4, 4, 4, 4,  8, 3],
@@ -108,13 +108,14 @@ def printMap(screen, board_map):
                     (j * TILE_SIDE + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT),
                     (j * TILE_SIDE + TILE_SIDE + OFFSET_WIDTH, i * TILE_SIDE + (0.5 * TILE_SIDE) + OFFSET_HEIGHT))
 
-def getBoard():
-    return BOARD
-
-def initUI(screen, score):
+def initUI(screen):
     screen.fill("black")
     # printMap(screen, board_map)
 
     font = pygame.font.Font("assets/font/PressStart2P-vaV7.ttf", 12)
     text = font.render("Press \"ESC\" to return to menu", True, (255, 255, 255))
     screen.blit(text, (15, 700))
+
+def initUITestMode(screen, board_map):
+    screen.fill("black")
+    printMap(screen, board_map)
