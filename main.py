@@ -1,3 +1,20 @@
+"""
+Reference:
+
+Pacman game: 
+https://youtu.be/9H27CimgPsQ?si=q4douzvwSb-77Qpp
+https://github.com/plemaster01/PythonPacman.git
+
+Search Algorithms:
+Generative AI: Deepseek, ChatGPT, ...
+IDS Search: https://www.geeksforgeeks.org/iterative-deepening-searchids-iterative-deepening-depth-first-searchiddfs/
+
+Timer: https://www.geeksforgeeks.org/pygame-time/
+Memory counter (using tracemalloc): https://www.geeksforgeeks.org/monitoring-memory-usage-of-a-running-python-program/
+Font: https://www.fontspace.com/press-start-2p-font-f11591
+
+"""
+
 import pygame
 import random
 from game_map import initUI, WINDOW_HEIGHT, WINDOW_WIDTH, printMap, IMAGE_SCALE, BOARD

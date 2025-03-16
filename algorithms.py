@@ -272,7 +272,7 @@ def IDSSearchCountExpandNodes(board, start, end):
         if tracer:
             return count_nodes
 
-        tracer, count_nodes = DLSSearch(board, start, end, depth, count_nodes)
+        tracer, count_nodes = DLSSearchCountExpandNodes(board, start, end, depth, count_nodes)
         depth += 1
 
 def getRandomMove(board, cur_pos):
